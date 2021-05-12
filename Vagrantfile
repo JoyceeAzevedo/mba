@@ -5,20 +5,16 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
-Vagrant.configure("2") do |configjoyce|
+Vagrant.configure("2") do |config|
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  configjoyce.vm.box = "hashicorp/precise32"
-  configjoyce.vm.hostname = "mysql57"
-  configjoyce.vm.provision "shell", path: "bootstrap.sh"
-  configjoyce.vm.define "mysql57" do |mysql57|
-  end
+  config.vm.box = "anhdht/mysql"
 
-  # Disable automatic box update checking. If you disable this, then
+  # Disable automatic box update checking. If you disable this, the
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
   # config.vm.box_check_update = false
@@ -27,16 +23,23 @@ Vagrant.configure("2") do |configjoyce|
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
-  #configjoyce.vm.network "forwarded_port", guest: 80, host: 8080
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
   # via 127.0.0.1 to disable public access
-  #configjoyce.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  configjoyce.vm.network "private_network", ip: "192.168.33.10"
+   config.vm.network "private_network", ip: "192.168.33.10"
+
+   config.vm.define "mysql" do |db|
+    db.vm.network "private_network", ip: "10.55.80.20"
+    db.vm.network "forwarded_port", guest: 3306, host: 3306
+    db.vm.provision "shell", path: "bootstrap.sh"
+  end
+end
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -67,8 +70,8 @@ Vagrant.configure("2") do |configjoyce|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
-   configjoyce.vm.provision "shell", inline: <<-SHELL
-     apt-get update
-    apt-get install -y apache2
-   SHELL
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   apt-get update
+  #   apt-get install -y apache2
+  # SHELL
 end
